@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/login/hotel_login.dart' as hotel;
+import 'package:flutter_application_hotel/hotel_layout/hotel_login.dart'
+    as hotel;
 import 'package:flutter_application_hotel/login/travel_login.dart' as travel;
-import 'package:flutter_application_hotel/layout/confirm_hotel.dart';
-import 'package:flutter_application_hotel/layout/confirm_travel.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_confirm.dart';
+import '../../travel_layout/travel_confirm.dart';
 import 'package:flutter_application_hotel/login/admin_login.dart'
     as managementer;
 import 'package:flutter_application_hotel/login/admin_signup.dart';

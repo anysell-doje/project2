@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_HotelSearch.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/hotel_reservation.dart';
@@ -22,6 +23,7 @@ class _ReservationState extends State<Reservation> {
   var roomCountController = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
+  var hotelname2;
   var _nightCount = 0;
   bool resvConfirm = false;
   @override
@@ -69,6 +71,7 @@ class _ReservationState extends State<Reservation> {
     try {
       print('yes');
       print('hotel_id : ${widget.hotelList[0]['hotel_id']}');
+      print('hotel_name: $hotelname2');
       print('inquirer_name : ${userNameController.text.trim()}');
       print('inquirer_tel : ${userPhoneController.text.trim()}');
       print('guest_count : ${guestCountController.text.trim()}');
@@ -82,6 +85,7 @@ class _ReservationState extends State<Reservation> {
         body: {
           "hotel_id":
               widget.hotelList[0]['hotel_id'].toString(), // int를 String으로 변환
+          "hotel_name": hotelname2.toString(),
           "inquirer_name": userNameController.text.trim(),
           "inquirer_tel": userPhoneController.text.trim(),
           "guest_count": guestCountController.text.trim(),
@@ -121,9 +125,36 @@ class _ReservationState extends State<Reservation> {
     Navigator.pop(context);
   }
 
-  reservationFiled() {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('예약이 취소 되었습니다.', textAlign: TextAlign.center)));
+  Future<void> _neverSatisfied() async {
+    return showDialog<void>(
+      //다이얼로그 위젯 소환
+      context: context,
+      barrierDismissible: false, // 다이얼로그 이외의 바탕 눌러도 안꺼지도록 설정
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('예약하시겠습니까?'),
+          content: const SingleChildScrollView(),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  hotelname2 = widget.hotelList[0]['hotel_name'];
+                });
+                hotelReservation();
+              },
+            ),
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -138,6 +169,7 @@ class _ReservationState extends State<Reservation> {
           hotelName,
           style: const TextStyle(
             fontFamily: 'Pretendard',
+            fontWeight: FontWeight.bold,
           ),
         ),
         elevation: 1.0,
@@ -350,7 +382,7 @@ class _ReservationState extends State<Reservation> {
                     height: 50,
                     child: OutlinedButton(
                       onPressed: () {
-                        hotelReservation();
+                        _neverSatisfied();
                       },
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.lightBlueAccent,

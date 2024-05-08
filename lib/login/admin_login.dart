@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/admin_api.dart';
-import 'package:flutter_application_hotel/layout/admin_index.dart';
-import 'package:flutter_application_hotel/layout/confirm_hotel.dart';
+import 'package:flutter_application_hotel/admin_layout/admin_index.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_confirm.dart';
 import 'package:flutter_application_hotel/model/hotel_user.dart';
 import 'package:flutter_application_hotel/login/hotel_signup.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/hotel_api.dart';
-import 'package:flutter_application_hotel/layout/travel_index.dart';
+import '../../travel_layout/travel_index.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -58,7 +58,7 @@ class LoginState extends State<Login> {
 
           complete();
         } else {
-          failed();
+          neverSatisfied();
         }
       }
     } catch (e) {
@@ -71,9 +71,25 @@ class LoginState extends State<Login> {
         context, MaterialPageRoute(builder: (context) => const admin_index()));
   }
 
-  failed() {
-    return ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('로그인 실패')));
+  Future<void> neverSatisfied() async {
+    return showDialog<void>(
+      //다이얼로그 위젯 소환
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('로그인에 실패하였습니다.'),
+          content: const SingleChildScrollView(),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

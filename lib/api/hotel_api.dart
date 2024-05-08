@@ -5,4 +5,8 @@ class HotelApi {
   static const signup = "$hostConnect/hotel/signup.jsp";
 
   static const login = "$hostConnect/hotel/login.jsp";
+
+  static const userUpdate = "$hostConnect/hotel/hotel_update.jsp";
+
+  static const userPwUpdate = "$hostConnect/hotel/password_change.jsp";
 }

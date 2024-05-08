@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/layout/TraveluserConfirm.dart';
+import 'package:flutter_application_hotel/admin_layout/admin_TraveluserConfirm.dart';
 import 'package:side_navigation/side_navigation.dart';
+import 'package:flutter_application_hotel/index/index.dart';
+import 'package:flutter_application_hotel/admin_layout/admin_HoteluserConfirm.dart';
 
 class admin_index extends StatefulWidget {
   const admin_index({super.key});
@@ -18,10 +20,8 @@ class _MainViewState extends State<admin_index> {
   void initState() {
     views = [
       const Center(),
-      const DynamicTable(),
-      const Center(
-        child: Text('chatting'),
-      ),
+      const TravelUserConfirm(),
+      const HoteluserConfirm(),
       const Center(
         child: Text('통계'),
       ),
@@ -45,6 +45,17 @@ class _MainViewState extends State<admin_index> {
             fontFamily: 'CantoraOne',
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const bothLogin()),
+                  (route) => false);
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
         shape:
             Border(bottom: BorderSide(width: 3, color: Colors.grey.shade200)),
       ),

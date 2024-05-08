@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/layout/Search.dart';
+import '../../travel_layout/travel_HotelSearch.dart';
 import 'package:flutter_application_hotel/model/hotel_query.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/hotel_reservation.dart';
-import 'package:flutter_application_hotel/layout/reservation.dart';
+import '../../travel_layout/travel_HotelReservation.dart';
 
 class HotelSelect extends StatefulWidget {
   final Map<String, dynamic> hotelList; // 호텔 이름을 저장할 변수
@@ -39,7 +39,9 @@ class _HotelSignUpState extends State<HotelSelect> {
       appBar: AppBar(
         title: Text(hotelName,
             style: const TextStyle(
-                fontFamily: 'Pretendard', fontWeight: FontWeight.bold)),
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.bold,
+            )),
       ),
       body: Container(
         color: Colors.grey[200],

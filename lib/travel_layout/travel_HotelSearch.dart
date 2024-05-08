@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/hotel_name_api.dart';
-import 'hotel_select.dart';
+import 'travel_HotelSelect.dart';
 import 'package:http/http.dart' as http;
 
 class searchBar extends StatefulWidget {

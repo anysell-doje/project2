@@ -1,4 +1,4 @@
-import 'package:flutter_application_hotel/layout/Search.dart';
+import '../../travel_layout/travel_HotelSearch.dart';
 
 class HotelName {
   String hotelName;

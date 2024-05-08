@@ -6,4 +6,7 @@ class TravelApi {
 
   static const login = "$hostConnect/travel/login.jsp";
   static const userUpdate = "$hostConnect/travel/travel_update.jsp";
+  static const cancelList = "$hostConnect/travel/resv_cencel_select.jsp";
+  static const cancelUpdate = "$hostConnect/travel/resv_cencel_update.jsp";
+  static const checkUpdate = "$hostConnect/travel/resv_check_update.jsp";
 }

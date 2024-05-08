@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
-import 'package:flutter_application_hotel/layout/travel_index.dart';
+import '../../travel_layout/travel_index.dart';
 
 import 'travel_signup.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_hotel/layout/confirm_travel.dart';
+import '../../travel_layout/travel_confirm.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -75,7 +75,7 @@ class LoginState extends State<Login> {
 
           complete();
         } else {
-          failed();
+          neverSatisfied();
         }
       }
     } catch (e) {
@@ -95,9 +95,25 @@ class LoginState extends State<Login> {
                 )));
   }
 
-  failed() {
-    return ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('로그인 실패')));
+  Future<void> neverSatisfied() async {
+    return showDialog<void>(
+      //다이얼로그 위젯 소환
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('로그인에 실패하였습니다.'),
+          content: const SingleChildScrollView(),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
