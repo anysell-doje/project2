@@ -24,6 +24,7 @@ class _searchBarState extends State<searchBar> {
       print('기달');
 
       if (response.statusCode == 200) {
+        print('200');
         Map<String, dynamic> jsonData = jsonDecode(response.body);
         success = jsonData['success'];
         hotelName = jsonDecode(response.body)['hotel_list'];
@@ -69,21 +70,20 @@ class _searchBarState extends State<searchBar> {
           ),
         ),
         Expanded(
-            child: ListView.builder(
-          itemCount: hotelName.length,
-          itemBuilder: (context, index) {
-            if (hotelName.isEmpty) {
-              return const Card(
-                child: ListTile(
-                  title: Text(
-                    "검색된 결과가 존재하지 않습니다.",
-                    textAlign: TextAlign.center,
+          child: ListView.separated(
+            itemCount: hotelName.length,
+            itemBuilder: (context, index) {
+              if (hotelName.isEmpty) {
+                return const Card(
+                  child: ListTile(
+                    title: Text(
+                      "검색된 결과가 존재하지 않습니다.",
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              );
-            } else if (success == true) {
-              return Card(
-                child: ListTile(
+                );
+              } else if (success == true) {
+                return ListTile(
                   trailing: const Icon(Icons.arrow_right),
                   title: Text(
                     hotelName[index]['hotel_name'],
@@ -105,12 +105,14 @@ class _searchBarState extends State<searchBar> {
                                   hotelList: hotelName[index],
                                 ))));
                   },
-                ),
-              );
-            }
-            return null;
-          },
-        ))
+                );
+              }
+              return null;
+            },
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(),
+          ),
+        ),
       ],
     );
   }

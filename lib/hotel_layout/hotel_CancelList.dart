@@ -27,14 +27,11 @@ class _CancelListState extends State<CancelList> {
 
   Future<void> _fetchUserDataFromApi() async {
     try {
-      var response = await http.post(Uri.parse(TravelApi.resvSelect), body: {
-        'travel_reservation_status': "3",
-      });
+      var response = await http.post(Uri.parse(TravelApi.resvSelect),
+          body: {'hotel_reservation_status': "3"});
 
       if (response.statusCode == 200) {
         var responseBody = jsonDecode(response.body);
-        print('200');
-        print(responseBody);
 
         if (responseBody['success'] == true) {
           // 'data' 필드가 null인지 확인 후 데이터 추출

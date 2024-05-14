@@ -1,10 +1,5 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import '../../travel_layout/travel_HotelSearch.dart';
-import 'package:flutter_application_hotel/model/hotel_query.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_application_hotel/api/hotel_reservation.dart';
 import '../../travel_layout/travel_HotelReservation.dart';
 
 class HotelSelect extends StatefulWidget {

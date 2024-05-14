@@ -9,4 +9,6 @@ class HotelApi {
   static const userUpdate = "$hostConnect/hotel/hotel_update.jsp";
 
   static const userPwUpdate = "$hostConnect/hotel/password_change.jsp";
+
+  static const resvUpdate = "$hostConnect/hotel/resv_hotel_update.jsp";
 }

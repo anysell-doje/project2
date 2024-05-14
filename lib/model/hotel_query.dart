@@ -1,4 +1,3 @@
-import '../../travel_layout/travel_HotelSearch.dart';
 
 class HotelName {
   String hotelName;

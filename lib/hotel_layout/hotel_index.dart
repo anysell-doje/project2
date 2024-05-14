@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_confirm.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_MyPage.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_confirmList.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_CancelList.dart';
 import 'package:side_navigation/side_navigation.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationList.dart';
 
 class hotel_index extends StatefulWidget {
   final String name;
@@ -30,14 +32,12 @@ class _MainViewState extends State<hotel_index> {
 
   @override
   void initState() {
+    super.initState();
     views = [
       const Center(),
-      const Center(
-        child: Text('chatting'),
-      ),
-      const Center(
-        child: Text('통계'),
-      ),
+      const ReservationList(),
+      const ReservationConfirmList(),
+      const CancelList(),
       hotel_MyPage(email: email, name: name, tel: tel, pw: pw)
     ];
   }
@@ -88,11 +88,15 @@ class _MainViewState extends State<hotel_index> {
               ),
               SideNavigationBarItem(
                 icon: Icons.search_outlined,
-                label: '예약리스트',
+                label: '예약확인대기 리스트',
               ),
               SideNavigationBarItem(
                 icon: Icons.chat,
-                label: '취소리스트',
+                label: '지불대기 리스트',
+              ),
+              SideNavigationBarItem(
+                icon: Icons.auto_graph_outlined,
+                label: '취소 리스트',
               ),
               SideNavigationBarItem(
                 icon: Icons.auto_graph_outlined,

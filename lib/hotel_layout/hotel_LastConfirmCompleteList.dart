@@ -1,24 +1,24 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationDetail.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_ReservationDetail.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_application_hotel/api/admin_api.dart';
 
-class ReservationList extends StatefulWidget {
-  const ReservationList({super.key});
+class ReservationConfirmCompleteList extends StatefulWidget {
+  const ReservationConfirmCompleteList({super.key});
 
   @override
-  _ReservationListState createState() => _ReservationListState();
+  _ReservationConfirmCompleteListState createState() =>
+      _ReservationConfirmCompleteListState();
 }
 
-class _ReservationListState extends State<ReservationList> {
+class _ReservationConfirmCompleteListState
+    extends State<ReservationConfirmCompleteList> {
   List<Map<String, dynamic>> _userData = []; // 데이터베이스에서 가져온 사용자 데이터
   var reservation_id = "";
-
-  bool isLoading = true; // 데이터 로딩 상태
-  bool hasData = false; // 데이터 유무
+  var reservation_status = "";
 
   @override
   void initState() {
@@ -29,10 +29,7 @@ class _ReservationListState extends State<ReservationList> {
 
   Future<void> _fetchUserDataFromApi() async {
     try {
-      var response = await http.post(Uri.parse(TravelApi.resvSelect), body: {
-        'travel_reservation_status': "1",
-        'hotel_reservation_status': "0"
-      });
+      var response = await http.post(Uri.parse(AdminApi.resvlist));
 
       if (response.statusCode == 200) {
         var responseBody = jsonDecode(response.body);
@@ -46,8 +43,7 @@ class _ReservationListState extends State<ReservationList> {
                 'reservation_id': userData['reservation_id'].toString(),
                 'inquirer_name': userData['inquirer_name'],
                 'check_out_date': userData['check_out_date'],
-                "travel_reservation_status":
-                    userData['travel_reservation_status'],
+                "reservation_status": userData['reservation_status'],
                 "room_count": userData['room_count'].toString(),
                 "night_count": userData['night_count'].toString(),
                 "hotel_id": userData['hotel_id'].toString(),
@@ -58,8 +54,6 @@ class _ReservationListState extends State<ReservationList> {
                 "hotel_name": userData['hotel_name'],
               };
             }).toList();
-
-            _fetchUserDataFromApi();
           });
         } else {
           throw "Failed to fetch user data";
@@ -74,8 +68,9 @@ class _ReservationListState extends State<ReservationList> {
 
   Future<void> resvCancel() async {
     try {
-      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
         'reservation_id': reservation_id,
+        'reservation_status': reservation_status,
       });
 
       if (response.statusCode == 200) {
@@ -130,7 +125,14 @@ class _ReservationListState extends State<ReservationList> {
   Widget build(BuildContext context) {
     return _userData.isEmpty
         ? const Center(
-            child: CircularProgressIndicator(),
+            child: Text(
+              '예약리스트가 비어있습니다.',
+              style: TextStyle(
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w700,
+                  color: Colors.red,
+                  fontSize: 22),
+            ),
           )
         : Padding(
             padding: const EdgeInsets.all(10.0),
@@ -168,9 +170,8 @@ class _ReservationListState extends State<ReservationList> {
                           onPressed: () {
                             setState(() {
                               reservation_id = user['reservation_id'];
+                              reservation_status = user['reservation_status'];
                             });
-
-                            print(reservation_id);
                             _cancleConfirm();
                           },
                           child: const Text(

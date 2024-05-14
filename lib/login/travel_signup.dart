@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
-import 'package:flutter_application_hotel/model/travel_user.dart';
 import 'package:http/http.dart' as http;
 
 class travelSignUp extends StatefulWidget {
@@ -26,6 +25,7 @@ class _SignState extends State<travelSignUp> {
   var emailController = TextEditingController();
   var telController = TextEditingController();
   var passwordController = TextEditingController();
+  var travelidController = TextEditingController();
 
   void printData() {
     print(userNameController);
@@ -66,6 +66,7 @@ class _SignState extends State<travelSignUp> {
           "travel_pw": passwordController.text.trim(),
           "travel_tel": telController.text.trim(),
           "travel_name": userNameController.text.trim(),
+          "travel_id": travelidController.text.trim(),
         },
       );
       if (res.statusCode == 200) {
@@ -227,6 +228,25 @@ class _SignState extends State<travelSignUp> {
                                   ? Icons.visibility
                                   : Icons.visibility_off)),
                           hintText: '비밀번호 확인'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 370.0,
+                    child: TextFormField(
+                      cursorColor: Colors.blue,
+                      keyboardType: TextInputType.phone,
+                      maxLength: 40,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "여행사ID를 입력하세요.";
+                        }
+                        return null;
+                      },
+                      controller: travelidController,
+                      decoration: const InputDecoration(
+                          counterText: '',
+                          prefixIcon: Icon(Icons.phone),
+                          hintText: '여행사 ID'),
                     ),
                   ),
                   SizedBox(

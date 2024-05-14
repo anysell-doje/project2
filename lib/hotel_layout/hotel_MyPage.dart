@@ -1,13 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application_hotel/api/hotel_api.dart';
-import 'package:flutter_application_hotel/api/travel_api.dart';
-import 'package:flutter_application_hotel/model/travel_user.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_hotel/login/travel_login.dart' as travel;
 
 class hotel_MyPage extends StatefulWidget {
   final String name;

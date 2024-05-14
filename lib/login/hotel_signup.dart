@@ -27,6 +27,7 @@ class _SignState extends State<HotelSignUp> {
   var emailController = TextEditingController();
   var telController = TextEditingController();
   var passwordController = TextEditingController();
+  var hotelidController = TextEditingController();
 
   String? validatePassword(String value) {
     String pattern =
@@ -63,6 +64,7 @@ class _SignState extends State<HotelSignUp> {
           "user_pw": passwordController.text.trim(),
           "user_tel": telController.text.trim(),
           "user_name": userNameController.text.trim(),
+          "hotel_id": hotelidController.text.trim(),
         },
       );
       if (res.statusCode == 200) {
@@ -199,6 +201,25 @@ class _SignState extends State<HotelSignUp> {
                       },
                       validator: (value) =>
                           validatePasswordConfirm(password, passwordConfirm),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 370.0,
+                    child: TextFormField(
+                      cursorColor: Colors.blue,
+                      keyboardType: TextInputType.phone,
+                      maxLength: 40,
+                      decoration: const InputDecoration(
+                          counterText: '',
+                          prefixIcon: Icon(Icons.phone),
+                          hintText: '여행사 ID'),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return '호텔 ID를 입력하세요.';
+                        }
+                        return null;
+                      },
+                      controller: hotelidController,
                     ),
                   ),
                   SizedBox(

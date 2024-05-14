@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/admin_api.dart';
 import 'package:flutter_application_hotel/admin_layout/admin_index.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_confirm.dart';
-import 'package:flutter_application_hotel/model/hotel_user.dart';
 import 'package:flutter_application_hotel/login/hotel_signup.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_hotel/api/hotel_api.dart';
-import '../../travel_layout/travel_index.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});

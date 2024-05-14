@@ -1,24 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationDetail.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_confirmListDetail.dart';
 import 'package:http/http.dart' as http;
 
-class ReservationList extends StatefulWidget {
-  const ReservationList({super.key});
+class ReservationConfirmList extends StatefulWidget {
+  const ReservationConfirmList({super.key});
 
   @override
-  _ReservationListState createState() => _ReservationListState();
+  _ReservationConfirmListState createState() => _ReservationConfirmListState();
 }
 
-class _ReservationListState extends State<ReservationList> {
+class _ReservationConfirmListState extends State<ReservationConfirmList> {
   List<Map<String, dynamic>> _userData = []; // 데이터베이스에서 가져온 사용자 데이터
   var reservation_id = "";
-
-  bool isLoading = true; // 데이터 로딩 상태
-  bool hasData = false; // 데이터 유무
+  var reservation_status = "";
 
   @override
   void initState() {
@@ -31,7 +28,7 @@ class _ReservationListState extends State<ReservationList> {
     try {
       var response = await http.post(Uri.parse(TravelApi.resvSelect), body: {
         'travel_reservation_status': "1",
-        'hotel_reservation_status': "0"
+        'hotel_reservation_status': "1"
       });
 
       if (response.statusCode == 200) {
@@ -46,8 +43,7 @@ class _ReservationListState extends State<ReservationList> {
                 'reservation_id': userData['reservation_id'].toString(),
                 'inquirer_name': userData['inquirer_name'],
                 'check_out_date': userData['check_out_date'],
-                "travel_reservation_status":
-                    userData['travel_reservation_status'],
+                "reservation_status": userData['reservation_status'],
                 "room_count": userData['room_count'].toString(),
                 "night_count": userData['night_count'].toString(),
                 "hotel_id": userData['hotel_id'].toString(),
@@ -58,8 +54,6 @@ class _ReservationListState extends State<ReservationList> {
                 "hotel_name": userData['hotel_name'],
               };
             }).toList();
-
-            _fetchUserDataFromApi();
           });
         } else {
           throw "Failed to fetch user data";
@@ -74,8 +68,10 @@ class _ReservationListState extends State<ReservationList> {
 
   Future<void> resvCancel() async {
     try {
-      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
         'reservation_id': reservation_id,
+        'travel_reservation_status': "1",
+        'hotel_reservation_status': "1"
       });
 
       if (response.statusCode == 200) {
@@ -121,7 +117,7 @@ class _ReservationListState extends State<ReservationList> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReservationDetail(ReserverInfo: userData),
+        builder: (context) => confirmListDetail(ReserverInfo: userData),
       ),
     );
   }
@@ -168,9 +164,8 @@ class _ReservationListState extends State<ReservationList> {
                           onPressed: () {
                             setState(() {
                               reservation_id = user['reservation_id'];
+                              reservation_status = user['reservation_status'];
                             });
-
-                            print(reservation_id);
                             _cancleConfirm();
                           },
                           child: const Text(

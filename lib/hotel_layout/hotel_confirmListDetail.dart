@@ -1,40 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_hotel/api/travel_api.dart';
 
-class ReservationDetail extends StatefulWidget {
+class confirmListDetail extends StatefulWidget {
   final Map<String, dynamic> ReserverInfo;
-  const ReservationDetail({
+  const confirmListDetail({
     super.key,
     required this.ReserverInfo,
   });
 
   @override
-  State<ReservationDetail> createState() => _ReservationDetailState();
+  State<confirmListDetail> createState() => confirmListDetailState();
 }
 
 List<dynamic> data = [];
+var reservation_id = "";
 
-class _ReservationDetailState extends State<ReservationDetail> {
-  var reservation_id = "";
+class confirmListDetailState extends State<confirmListDetail> {
   Future<void> _resvConfirm() async {
     try {
-      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
         'reservation_id': reservation_id,
-        'travel_reservation_status': "1",
-        'hotel_reservation_status': "0",
+        'hotel_reservation_status': "2",
+        'travel_reservation_status': "2",
       });
 
       if (response.statusCode == 200) {
-        if (mounted) {
-          Navigator.pop(context); // 현재 페이지 닫기
-        }
-        print(reservation_id);
+        print('바뀜');
         setState(() {
           // _fetchUserDataFromApi();
         });
       }
-      print('안바뀜');
     } catch (e) {}
   }
 
@@ -46,11 +42,10 @@ class _ReservationDetailState extends State<ReservationDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            '예약확정을 진행하시겠습니까?',
+            '최종컨펌을 진행하시겠습니까?',
             style: TextStyle(
                 fontFamily: 'Pretendard', fontWeight: FontWeight.w700),
           ),
-          content: const SingleChildScrollView(),
           actions: [
             TextButton(
               child: const Text(
@@ -94,7 +89,7 @@ class _ReservationDetailState extends State<ReservationDetail> {
     String checkInDate = widget.ReserverInfo['check_in_date'];
     String checkOutDate = widget.ReserverInfo['check_out_date'];
     String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String resvStatus = widget.ReserverInfo['travel_reservation_status'];
+    String resvStatus = widget.ReserverInfo['reservation_status'];
     return Scaffold(
       appBar: AppBar(
         title: const Text('상세정보'),
@@ -288,7 +283,7 @@ class _ReservationDetailState extends State<ReservationDetail> {
                       _Confirm();
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.lightBlueAccent,
+                      backgroundColor: Colors.greenAccent,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(5),
@@ -296,7 +291,7 @@ class _ReservationDetailState extends State<ReservationDetail> {
                       ),
                     ),
                     child: const Text(
-                      '예약확정',
+                      '최종컨펌 완료',
                       style: TextStyle(
                           fontFamily: 'Pretendard',
                           fontSize: 18,

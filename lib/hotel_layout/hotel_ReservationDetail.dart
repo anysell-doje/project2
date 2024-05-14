@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_hotel/api/travel_api.dart';
 
 class ReservationDetail extends StatefulWidget {
   final Map<String, dynamic> ReserverInfo;
@@ -19,10 +19,10 @@ class _ReservationDetailState extends State<ReservationDetail> {
   var reservation_id = "";
   Future<void> _resvConfirm() async {
     try {
-      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
         'reservation_id': reservation_id,
         'travel_reservation_status': "1",
-        'hotel_reservation_status': "0",
+        'hotel_reservation_status': "1",
       });
 
       if (response.statusCode == 200) {
@@ -46,7 +46,7 @@ class _ReservationDetailState extends State<ReservationDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            '예약확정을 진행하시겠습니까?',
+            '예약확정 진행하시겠습니까?',
             style: TextStyle(
                 fontFamily: 'Pretendard', fontWeight: FontWeight.w700),
           ),

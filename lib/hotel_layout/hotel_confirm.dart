@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/login/hotel_signup.dart';
-import 'package:flutter_application_hotel/login/travel_signup.dart';
 
 class confirm_hotel extends StatefulWidget {
   const confirm_hotel({super.key});
