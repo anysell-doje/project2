@@ -21,7 +21,6 @@ class _searchBarState extends State<searchBar> {
     try {
       var response = await http
           .get(Uri.parse('${HotelNameApi.hotelName}?hotel_name=$query'));
-      print('기달');
 
       if (response.statusCode == 200) {
         print('200');
@@ -35,9 +34,7 @@ class _searchBarState extends State<searchBar> {
             hotelName = jsonDecode(response.body)['hotel_list'];
           });
         }
-      } else {
-        print('실패');
-      }
+      } else {}
     } catch (e) {}
   }
 
@@ -74,12 +71,10 @@ class _searchBarState extends State<searchBar> {
             itemCount: hotelName.length,
             itemBuilder: (context, index) {
               if (hotelName.isEmpty) {
-                return const Card(
-                  child: ListTile(
-                    title: Text(
-                      "검색된 결과가 존재하지 않습니다.",
-                      textAlign: TextAlign.center,
-                    ),
+                return const ListTile(
+                  title: Text(
+                    "검색된 결과가 존재하지 않습니다.",
+                    textAlign: TextAlign.center,
                   ),
                 );
               } else if (success == true) {

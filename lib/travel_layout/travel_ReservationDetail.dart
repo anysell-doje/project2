@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_Update.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/travel_api.dart';
 
@@ -14,9 +15,23 @@ class ReservationDetail extends StatefulWidget {
 }
 
 List<dynamic> data = [];
+String reservationId = "";
+String hotelID = "";
+String travelID = "";
+String hotelname = "";
+String inquiryName = "";
+String inquiryTel = "";
+String nightCount = "";
+String guestCount = "";
+String roomCount = "";
+String checkInDate = "";
+String checkOutDate = "";
+String totalPrice = "";
+String resvStatus = "";
 
 class _ReservationDetailState extends State<ReservationDetail> {
   var reservation_id = "";
+
   Future<void> _resvConfirm() async {
     try {
       var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
@@ -27,7 +42,7 @@ class _ReservationDetailState extends State<ReservationDetail> {
 
       if (response.statusCode == 200) {
         if (mounted) {
-          Navigator.pop(context); // 현재 페이지 닫기
+          Navigator.pop(context, true); // true 값을 반환하며 현재 페이지 닫기
         }
         print(reservation_id);
         setState(() {
@@ -82,48 +97,47 @@ class _ReservationDetailState extends State<ReservationDetail> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    reservationId = widget.ReserverInfo['reservation_id'].toString();
+    hotelID = widget.ReserverInfo['hotel_id'].toString();
+    travelID = widget.ReserverInfo['agency_id'].toString();
+    hotelname = widget.ReserverInfo['hotel_name'];
+    inquiryName = widget.ReserverInfo['inquirer_name'];
+    inquiryTel = widget.ReserverInfo['inquirer_tel'];
+    nightCount = widget.ReserverInfo['night_count'].toString();
+    guestCount = widget.ReserverInfo['guest_count'].toString();
+    roomCount = widget.ReserverInfo['room_count'].toString();
+    checkInDate = widget.ReserverInfo['check_in_date'];
+    checkOutDate = widget.ReserverInfo['check_out_date'];
+    totalPrice = widget.ReserverInfo['hotel_price'].toString();
+    resvStatus = widget.ReserverInfo['travel_reservation_status'];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String reservationId = widget.ReserverInfo['reservation_id'].toString();
-    String hotelID = widget.ReserverInfo['hotel_id'].toString();
-    String hotelname = widget.ReserverInfo['hotel_name'];
-    String inquiryName = widget.ReserverInfo['inquirer_name'];
-    String inquiryTel = widget.ReserverInfo['inquirer_tel'];
-    String nightCount = widget.ReserverInfo['night_count'].toString();
-    String guestCount = widget.ReserverInfo['guest_count'].toString();
-    String roomCount = widget.ReserverInfo['room_count'].toString();
-    String checkInDate = widget.ReserverInfo['check_in_date'];
-    String checkOutDate = widget.ReserverInfo['check_out_date'];
-    String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String resvStatus = widget.ReserverInfo['travel_reservation_status'];
+    DateTime startDate = DateTime.parse(checkInDate);
+    DateTime endDate = DateTime.parse(checkOutDate);
     return Scaffold(
       appBar: AppBar(
         title: const Text('상세정보'),
         elevation: 1.0,
         shadowColor: Colors.black,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
-          child: SizedBox(
-            width: 200,
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(30),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '호텔 ID: ',
-                      style: TextStyle(
-                          fontFamily: 'Pretendard',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    Text(
-                      hotelID,
-                      style: const TextStyle(
-                          fontFamily: 'Pretendard', fontSize: 15),
-                    )
-                  ],
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -277,6 +291,9 @@ class _ReservationDetailState extends State<ReservationDetail> {
                     )
                   ],
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 SizedBox(
                   width: 250,
                   child: OutlinedButton(
@@ -288,11 +305,15 @@ class _ReservationDetailState extends State<ReservationDetail> {
                       _Confirm();
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.lightBlueAccent,
+                      backgroundColor: Colors.white,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(5),
                         ),
+                      ),
+                      side: const BorderSide(
+                        width: 2,
+                        color: Colors.green,
                       ),
                     ),
                     child: const Text(
@@ -300,10 +321,58 @@ class _ReservationDetailState extends State<ReservationDetail> {
                       style: TextStyle(
                           fontFamily: 'Pretendard',
                           fontSize: 18,
-                          color: Colors.white),
+                          color: Colors.green),
                     ),
                   ),
-                )
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  width: 250,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdatePage(
+                            reservationID: reservationId,
+                            name: inquiryName,
+                            phone: inquiryTel,
+                            startDate: startDate,
+                            endDate: endDate,
+                            roomcount: roomCount,
+                            guest: guestCount,
+                            night: nightCount,
+                            price: totalPrice,
+                          ),
+                        ),
+                      );
+                      if (result == true) {
+                        Navigator.pop(context, true); // 현재 페이지 닫기 및 true 값 반환
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5),
+                        ),
+                      ),
+                      side: const BorderSide(
+                        color: Colors.amber,
+                        width: 2,
+                      ),
+                    ),
+                    child: const Text(
+                      '수정하기',
+                      style: TextStyle(
+                          fontFamily: 'Pretendard',
+                          fontSize: 18,
+                          color: Colors.amber),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

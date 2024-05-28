@@ -1,26 +1,26 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationDetail.dart';
-import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationCompleteDetail.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
 import 'package:provider/provider.dart';
 
-class ReservationList extends StatefulWidget {
-  const ReservationList({super.key});
+class ReservationComplete extends StatefulWidget {
+  const ReservationComplete({super.key});
 
   @override
-  _ReservationListState createState() => _ReservationListState();
+  _ReservationCompleteState createState() => _ReservationCompleteState();
 }
 
-class _ReservationListState extends State<ReservationList> {
+class _ReservationCompleteState extends State<ReservationComplete> {
   List<Map<String, dynamic>> _userData = [];
-  var reservation_id = "";
-  bool isLoading = true; // 데이터 로딩 상태
-  bool hasData = false; // 데이터 유무
   String? hotelID;
-  dynamic date;
+
+  bool isLoading = true;
+  bool hasData = false;
 
   @override
   void initState() {
@@ -33,9 +33,9 @@ class _ReservationListState extends State<ReservationList> {
   Future<void> _fetchUserDataFromApi() async {
     try {
       var response = await http.post(Uri.parse(HotelApi.resvSelect), body: {
-        'travel_reservation_status': "1",
-        'hotel_reservation_status': "0",
-        'hotel_id': hotelID,
+        'travel_reservation_status': "2",
+        'hotel_reservation_status': "2",
+        'hotel_id': hotelID!,
       });
 
       if (response.statusCode == 200) {
@@ -63,10 +63,7 @@ class _ReservationListState extends State<ReservationList> {
                 "hotel_name": userData['hotel_name'],
               };
             }).toList();
-
-            // 데이터가 로드되었으므로 로딩 상태를 false로 설정
             isLoading = false;
-            // 데이터가 있는지 확인하고 상태를 설정
             hasData = _userData.isNotEmpty;
           });
         } else {
@@ -80,11 +77,11 @@ class _ReservationListState extends State<ReservationList> {
     }
   }
 
-  Future<void> resvCancel() async {
+  Future<void> resvCancel(String reservationId) async {
     try {
-      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
-        'reservation_id': reservation_id,
-        'cancel_date': date.toString().replaceAll(",", ""),
+      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
+        'reservation_id': reservationId,
+        'hotel_reservation_status': "3"
       });
 
       if (response.statusCode == 200) {
@@ -95,7 +92,7 @@ class _ReservationListState extends State<ReservationList> {
     }
   }
 
-  Future<void> _cancleConfirm() async {
+  Future<void> _cancelConfirm(String reservationId) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -109,9 +106,8 @@ class _ReservationListState extends State<ReservationList> {
                 style: TextStyle(fontFamily: 'Pretendard', color: Colors.red),
               ),
               onPressed: () {
-                date = DateTime.now();
                 Navigator.of(context).pop();
-                resvCancel();
+                resvCancel(reservationId);
               },
             ),
             TextButton(
@@ -130,13 +126,9 @@ class _ReservationListState extends State<ReservationList> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReservationDetail(ReserverInfo: userData),
+        builder: (context) => ReservationCompleteDetail(ReserverInfo: userData),
       ),
-    ).then((value) {
-      if (value) {
-        setState(() {});
-      }
-    });
+    );
   }
 
   @override
@@ -144,83 +136,80 @@ class _ReservationListState extends State<ReservationList> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          '예약확인대기 리스트',
+          '예약완료 리스트',
           style: TextStyle(
-              fontFamily: 'Pretendard',
-              fontSize: 25,
-              fontWeight: FontWeight.w600,
-              color: Colors.black),
+            fontFamily: 'Pretendard',
+            fontSize: 25,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         automaticallyImplyLeading: false,
         elevation: 2,
-        backgroundColor: Colors.teal[200],
         shadowColor: Colors.black,
+        backgroundColor: Colors.teal[200],
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(), // 데이터 로딩 중이면 로딩 표시
-            )
+          ? const Center(child: CircularProgressIndicator())
           : hasData
               ? Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: ListView.separated(
-                    itemCount: _userData.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Map<String, dynamic> user = _userData[index];
+                  child: Column(
+                    children: [
+                      const Text(
+                        '※ 예약내용을 보려면 "예약완료 됨"을 누르세요.',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _userData.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            Map<String, dynamic> user = _userData[index];
 
-                      return ListTile(
-                        title: Text(
-                          user['inquirer_name'].toString(),
-                          style: const TextStyle(
-                            fontFamily: 'Pretendard',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        subtitle: Text(
-                          user['hotel_name'].toString(),
-                          style: const TextStyle(
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                print(user);
-                                viewDetail(user);
-                              },
-                              child: const Text(
-                                '자세히보기',
-                                style: TextStyle(
-                                    color: Colors.green,
-                                    fontFamily: 'Pretendard'),
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                  user['inquirer_name'].toString(),
+                                  style: const TextStyle(
+                                    fontFamily: 'Pretendard',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  user['hotel_name'].toString(),
+                                  style: const TextStyle(
+                                    fontFamily: 'Pretendard',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        viewDetail(user);
+                                      },
+                                      child: const Text(
+                                        '예약완료 됨',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  reservation_id = user['reservation_id'];
-                                });
-                                print(reservation_id);
-                                _cancleConfirm();
-                              },
-                              child: const Text(
-                                '취소',
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    fontFamily: 'Pretendard'),
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const Divider();
-                    },
+                      ),
+                    ],
                   ),
                 )
               : const Center(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/index/index.dart';
 import 'package:flutter_application_hotel/travel_layout/travel_CancelList.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_CompleteList.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_inquiryList.dart';
 import 'travel_confirmList.dart';
 import 'travel_myPage.dart';
 import 'travel_HotelSearch.dart';
@@ -29,28 +31,63 @@ class _MainViewState extends State<travel_index> {
   String tel;
   String pw;
   late List<Widget> views;
+  bool _reloadPage = false; // 페이지 리로드 플래그
 
   _MainViewState(this.email, this.name, this.tel, this.pw);
 
   @override
   void initState() {
+    super.initState();
     views = [
       const Center(),
       const searchBar(),
       const ReservationList(),
       const ReservationConfirmList(),
       const CancelList(),
-      const Center(
-        child: Text('통계'),
-      ),
+      const CompleteList(),
+      const TravelInquirylist(),
       travel_MyPage(email: email, name: name, tel: tel, pw: pw)
     ];
   }
 
   int selectedIndex = 0;
 
+  Future<void> _refreshPage(int index) async {
+    setState(() {
+      views[index] = _getPage(index); // 리빌드
+    });
+  }
+
+  Widget _getPage(int index) {
+    switch (index) {
+      case 0:
+        return const Center();
+      case 1:
+        return const searchBar();
+      case 2:
+        return const ReservationList();
+      case 3:
+        return const ReservationConfirmList();
+      case 4:
+        return const CancelList();
+      case 5:
+        return const CompleteList();
+      case 6:
+        return const TravelInquirylist();
+      case 7:
+        return travel_MyPage(email: email, name: name, tel: tel, pw: pw);
+      default:
+        return const Center();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_reloadPage) {
+      _refreshPage(selectedIndex);
+      _reloadPage = false;
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -111,8 +148,12 @@ class _MainViewState extends State<travel_index> {
                 label: '취소리스트',
               ),
               SideNavigationBarItem(
-                icon: Icons.auto_graph_outlined,
-                label: '통계',
+                icon: Icons.check,
+                label: '예약완료 리스트',
+              ),
+              SideNavigationBarItem(
+                icon: Icons.question_answer,
+                label: '문의 리스트',
               ),
               SideNavigationBarItem(
                 icon: Icons.person,
@@ -129,13 +170,14 @@ class _MainViewState extends State<travel_index> {
               togglerTheme: SideNavigationBarTogglerTheme.standard(),
               dividerTheme: SideNavigationBarDividerTheme.standard(),
             ),
-            onTap: (index) {
-              setState(() {
-                if (index >= 0 && index < views.length) {
-                  // views의 길이에 맞게 범위를 확인합니다.
+            onTap: (index) async {
+              if (index == selectedIndex) {
+                await _refreshPage(index);
+              } else {
+                setState(() {
                   selectedIndex = index;
-                }
-              });
+                });
+              }
             },
             toggler: SideBarToggler(
                 expandIcon: Icons.keyboard_arrow_right,

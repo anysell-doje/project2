@@ -1,5 +1,5 @@
 class HotelReservation {
-  static const String hostConnect = "http://192.168.123.3";
+  static const String hostConnect = "http://192.168.123.4";
   static const String hostConnectReservation = "$hostConnect/travel";
 
   static const String reservation =

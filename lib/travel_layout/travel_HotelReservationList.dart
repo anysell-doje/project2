@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_InquiryPage.dart';
 import 'package:flutter_application_hotel/travel_layout/travel_ReservationDetail.dart';
+import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ReservationList extends StatefulWidget {
   const ReservationList({super.key});
@@ -13,24 +16,34 @@ class ReservationList extends StatefulWidget {
 }
 
 class _ReservationListState extends State<ReservationList> {
-  List<Map<String, dynamic>> _userData = []; // 데이터베이스에서 가져온 사용자 데이터
+  List<Map<String, dynamic>> _userData = [];
   var reservation_id = "";
 
-  bool isLoading = true; // 데이터 로딩 상태
-  bool hasData = false; // 데이터 유무
+  bool isLoading = false;
+  bool hasData = false;
+  dynamic date = "";
+
+  String? travelID;
 
   @override
   void initState() {
     super.initState();
-    // 비동기적으로 데이터를 가져오는 시뮬레이션 (예: 네트워크 요청 등)
+
+    final userData = Provider.of<UserData>(context, listen: false);
+    travelID = userData.travelId.toString();
     _fetchUserDataFromApi();
   }
 
   Future<void> _fetchUserDataFromApi() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       var response = await http.post(Uri.parse(TravelApi.resvSelect), body: {
         'travel_reservation_status': "0",
-        'hotel_reservation_status': "0"
+        'hotel_reservation_status': "0",
+        "agency_id": travelID,
       });
 
       if (response.statusCode == 200) {
@@ -45,6 +58,7 @@ class _ReservationListState extends State<ReservationList> {
                 'reservation_id': userData['reservation_id'].toString(),
                 'inquirer_name': userData['inquirer_name'],
                 'check_out_date': userData['check_out_date'],
+                'agency_id': userData['agency_id'],
                 "travel_reservation_status":
                     userData['travel_reservation_status'],
                 "hotel_reservation_status":
@@ -60,15 +74,24 @@ class _ReservationListState extends State<ReservationList> {
               };
             }).toList();
 
-            _fetchUserDataFromApi();
+            isLoading = false;
+            hasData = _userData.isNotEmpty;
           });
         } else {
+          setState(() {
+            isLoading = false;
+            hasData = false;
+          });
           throw "Failed to fetch user data";
         }
       } else {
         throw "Failed to load user data: ${response.statusCode}";
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+        hasData = false;
+      });
       print("Error fetching user data: $e");
     }
   }
@@ -78,6 +101,7 @@ class _ReservationListState extends State<ReservationList> {
       var response =
           await http.post(Uri.parse(TravelApi.resvcancelUpdate), body: {
         'reservation_id': reservation_id,
+        'cancel_date': date.toString().replaceAll(",", ""),
       });
 
       if (response.statusCode == 200) {
@@ -90,9 +114,8 @@ class _ReservationListState extends State<ReservationList> {
 
   Future<void> _cancleConfirm() async {
     return showDialog<void>(
-      //다이얼로그 위젯 소환
       context: context,
-      barrierDismissible: false, // 다이얼로그 이외의 바탕 눌러도 안꺼지도록 설정
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('예약을 취소하시겠습니까?'),
@@ -103,6 +126,7 @@ class _ReservationListState extends State<ReservationList> {
                 style: TextStyle(fontFamily: 'Pretendard', color: Colors.red),
               ),
               onPressed: () {
+                date = DateTime.now();
                 Navigator.of(context).pop();
                 resvCancel();
               },
@@ -119,75 +143,125 @@ class _ReservationListState extends State<ReservationList> {
     );
   }
 
-  void viewDetail(Map<String, dynamic> userData) {
-    Navigator.push(
+  void viewDetail(Map<String, dynamic> userData) async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ReservationDetail(ReserverInfo: userData),
       ),
     );
+
+    if (result == true) {
+      setState(() {});
+    }
+  }
+
+  void inquiryInput(Map<String, dynamic> userData) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => InquiryInput(userData: userData)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return _userData.isEmpty
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ListView.separated(
-              separatorBuilder: (context, index) =>
-                  const Divider(height: 10), // 각 항목 사이의 간격을 지정
-              itemCount: _userData.length,
-              itemBuilder: (context, index) {
-                var user = _userData[index];
-                return ListTile(
-                  title: Text(
-                    user['inquirer_name'].toString(),
-                    style: const TextStyle(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          '예약리스트',
+          style: TextStyle(
+              fontFamily: 'Pretendard',
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              color: Colors.black),
+        ),
+        automaticallyImplyLeading: false,
+        elevation: 2,
+        backgroundColor: Colors.purple[200],
+        shadowColor: Colors.black,
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : hasData
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 10),
+                    itemCount: _userData.length,
+                    itemBuilder: (context, index) {
+                      var user = _userData[index];
+                      return ListTile(
+                        title: Text(
+                          user['inquirer_name'].toString(),
+                          style: const TextStyle(
+                            fontFamily: 'Pretendard',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        subtitle: Text(
+                          user['hotel_name'].toString(),
+                          style: const TextStyle(
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                viewDetail(user);
+                              },
+                              child: const Text(
+                                '자세히보기',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: 'Pretendard'),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                inquiryInput(user);
+                              },
+                              child: const Text(
+                                '문의하기',
+                                style: TextStyle(
+                                    color: Colors.orange,
+                                    fontFamily: 'Pretendard'),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  reservation_id = user['reservation_id'];
+                                });
+                                _cancleConfirm();
+                              },
+                              child: const Text(
+                                '취소',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontFamily: 'Pretendard'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : const Center(
+                  child: Text(
+                    '리스트가 비어있습니다.',
+                    style: TextStyle(
                       fontFamily: 'Pretendard',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                      color: Colors.red,
+                      fontSize: 22,
                     ),
                   ),
-                  subtitle: Text(
-                    user['hotel_name'].toString(),
-                    style: const TextStyle(
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          print(user);
-                          viewDetail(user);
-                        },
-                        child: const Text(
-                          'Details',
-                          style: TextStyle(color: Colors.green),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            reservation_id = user['reservation_id'];
-                          });
-                          _cancleConfirm();
-                        },
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          );
+                ),
+    );
   }
 }

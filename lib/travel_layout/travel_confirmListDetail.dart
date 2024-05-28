@@ -27,8 +27,10 @@ class _confirmListDetailState extends State<confirmListDetail> {
 
       if (response.statusCode == 200) {
         print('바뀜');
+
         setState(() {
           // _fetchUserDataFromApi();
+          Navigator.pop(context);
         });
       }
     } catch (e) {}
@@ -42,7 +44,7 @@ class _confirmListDetailState extends State<confirmListDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            '최종컨펌을 진행하시겠습니까?',
+            '결제하시겠습니까?',
             style: TextStyle(
                 fontFamily: 'Pretendard', fontWeight: FontWeight.w700),
           ),
@@ -77,9 +79,16 @@ class _confirmListDetailState extends State<confirmListDetail> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    _confirmListDetailState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     String reservationId = widget.ReserverInfo['reservation_id'].toString();
     String hotelID = widget.ReserverInfo['hotel_id'].toString();
+    String travelID = widget.ReserverInfo['agency_id'].toString();
     String hotelname = widget.ReserverInfo['hotel_name'];
     String inquiryName = widget.ReserverInfo['inquirer_name'];
     String inquiryTel = widget.ReserverInfo['inquirer_tel'];
@@ -89,7 +98,8 @@ class _confirmListDetailState extends State<confirmListDetail> {
     String checkInDate = widget.ReserverInfo['check_in_date'];
     String checkOutDate = widget.ReserverInfo['check_out_date'];
     String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String resvStatus = widget.ReserverInfo['reservation_status'];
+    String resvStatus = widget.ReserverInfo['travel_reservation_status'];
+    print(widget.ReserverInfo['agency_id']);
     return Scaffold(
       appBar: AppBar(
         title: const Text('상세정보'),
@@ -114,6 +124,23 @@ class _confirmListDetailState extends State<confirmListDetail> {
                     ),
                     Text(
                       hotelID,
+                      style: const TextStyle(
+                          fontFamily: 'Pretendard', fontSize: 15),
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '여행사 ID: ',
+                      style: TextStyle(
+                          fontFamily: 'Pretendard',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      travelID,
                       style: const TextStyle(
                           fontFamily: 'Pretendard', fontSize: 15),
                     )
@@ -291,7 +318,7 @@ class _confirmListDetailState extends State<confirmListDetail> {
                       ),
                     ),
                     child: const Text(
-                      '최종컨펌 완료',
+                      '결제하기',
                       style: TextStyle(
                           fontFamily: 'Pretendard',
                           fontSize: 18,

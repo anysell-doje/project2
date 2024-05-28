@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_LastConfirmCompleteList.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_MyPage.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_confirmList.dart';
-import 'package:flutter_application_hotel/travel_layout/travel_CancelList.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationCompleteList.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationConfirmList.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_CancelList.dart';
 import 'package:side_navigation/side_navigation.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationList.dart';
 
@@ -37,6 +39,7 @@ class _MainViewState extends State<hotel_index> {
       const Center(),
       const ReservationList(),
       const ReservationConfirmList(),
+      const ReservationComplete(),
       const CancelList(),
       hotel_MyPage(email: email, name: name, tel: tel, pw: pw)
     ];
@@ -67,7 +70,10 @@ class _MainViewState extends State<hotel_index> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: const Icon(Icons.exit_to_app))
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.black,
+              ))
         ],
       ),
       body: Sidebar(),
@@ -87,20 +93,20 @@ class _MainViewState extends State<hotel_index> {
                 label: '메인화면',
               ),
               SideNavigationBarItem(
-                icon: Icons.search_outlined,
+                icon: Icons.timer,
                 label: '예약확인대기 리스트',
               ),
               SideNavigationBarItem(
                 icon: Icons.chat,
-                label: '지불대기 리스트',
+                label: '지불완료 리스트',
+              ),
+              SideNavigationBarItem(
+                icon: Icons.check,
+                label: '예약완료 리스트',
               ),
               SideNavigationBarItem(
                 icon: Icons.auto_graph_outlined,
                 label: '취소 리스트',
-              ),
-              SideNavigationBarItem(
-                icon: Icons.auto_graph_outlined,
-                label: '통계',
               ),
               SideNavigationBarItem(
                 icon: Icons.person,

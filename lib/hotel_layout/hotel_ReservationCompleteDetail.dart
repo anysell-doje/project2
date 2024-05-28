@@ -1,89 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_application_hotel/api/travel_api.dart';
 
-class confirmListDetail extends StatefulWidget {
+class ReservationCompleteDetail extends StatefulWidget {
   final Map<String, dynamic> ReserverInfo;
-  const confirmListDetail({
+  const ReservationCompleteDetail({
     super.key,
     required this.ReserverInfo,
   });
 
   @override
-  State<confirmListDetail> createState() => confirmListDetailState();
+  State<ReservationCompleteDetail> createState() =>
+      _ReservationCompleteDetailState();
 }
 
 List<dynamic> data = [];
 var reservation_id = "";
-late String travelresvStatus; // travelresvStatus 상태 변수 추가
 
-class confirmListDetailState extends State<confirmListDetail> {
+class _ReservationCompleteDetailState extends State<ReservationCompleteDetail> {
   Future<void> _resvConfirm() async {
     try {
-      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
         'reservation_id': reservation_id,
-        'hotel_reservation_status': "2",
         'travel_reservation_status': "2",
+        'hotel_reservation_status': "1"
       });
 
       if (response.statusCode == 200) {
         print('바뀜');
+
         setState(() {
-          Navigator.pop(context);
           // _fetchUserDataFromApi();
+          Navigator.pop(context);
         });
       }
     } catch (e) {}
   }
 
-  Future<void> _Confirm() async {
-    return showDialog<void>(
-      //다이얼로그 위젯 소환
-      context: context,
-      barrierDismissible: false, // 다이얼로그 이외의 바탕 눌러도 안꺼지도록 설정
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            '최종컨펌을 진행하시겠습니까?',
-            style: TextStyle(
-                fontFamily: 'Pretendard', fontWeight: FontWeight.w700),
-          ),
-          actions: [
-            TextButton(
-              child: const Text(
-                '확인',
-                style: TextStyle(
-                    fontFamily: 'Pretendard', fontWeight: FontWeight.w700),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _resvConfirm();
-              },
-            ),
-            TextButton(
-              child: const Text(
-                '취소',
-                style: TextStyle(
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w700,
-                    color: Colors.red),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    // TODO: implement initState
+    _ReservationCompleteDetailState();
   }
 
   @override
   Widget build(BuildContext context) {
     String reservationId = widget.ReserverInfo['reservation_id'].toString();
     String hotelID = widget.ReserverInfo['hotel_id'].toString();
+    String travelID = widget.ReserverInfo['agency_id'].toString();
     String hotelname = widget.ReserverInfo['hotel_name'];
-    String travelID = widget.ReserverInfo['agency_id'];
     String inquiryName = widget.ReserverInfo['inquirer_name'];
     String inquiryTel = widget.ReserverInfo['inquirer_tel'];
     String nightCount = widget.ReserverInfo['night_count'].toString();
@@ -92,11 +57,8 @@ class confirmListDetailState extends State<confirmListDetail> {
     String checkInDate = widget.ReserverInfo['check_in_date'];
     String checkOutDate = widget.ReserverInfo['check_out_date'];
     String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String travelresvStatus = widget.ReserverInfo['travel_reservation_status'];
-    String hotelresvStatus = widget.ReserverInfo['hotel_reservation_status'];
-
-    print('ddddd1: $travelresvStatus');
-    print('ddddd2: $hotelresvStatus');
+    String resvStatus = widget.ReserverInfo['travel_reservation_status'];
+    print(widget.ReserverInfo['agency_id']);
     return Scaffold(
       appBar: AppBar(
         title: const Text('상세정보'),
@@ -121,6 +83,23 @@ class confirmListDetailState extends State<confirmListDetail> {
                     ),
                     Text(
                       hotelID,
+                      style: const TextStyle(
+                          fontFamily: 'Pretendard', fontSize: 15),
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '여행사 ID: ',
+                      style: TextStyle(
+                          fontFamily: 'Pretendard',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      travelID,
                       style: const TextStyle(
                           fontFamily: 'Pretendard', fontSize: 15),
                     )
@@ -283,11 +262,7 @@ class confirmListDetailState extends State<confirmListDetail> {
                   width: 250,
                   child: OutlinedButton(
                     onPressed: () {
-                      setState(() {
-                        reservation_id =
-                            widget.ReserverInfo['reservation_id'].toString();
-                      });
-                      _Confirm();
+                      Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
                       backgroundColor: Colors.greenAccent,
@@ -298,7 +273,7 @@ class confirmListDetailState extends State<confirmListDetail> {
                       ),
                     ),
                     child: const Text(
-                      '최종컨펌 완료',
+                      '뒤로가기',
                       style: TextStyle(
                           fontFamily: 'Pretendard',
                           fontSize: 18,

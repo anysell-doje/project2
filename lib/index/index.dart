@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_login.dart'
-    as hotel;
+import 'package:flutter_application_hotel/login/hotel_login.dart' as hotel;
 import 'package:flutter_application_hotel/login/travel_login.dart' as travel;
 import 'package:flutter_application_hotel/hotel_layout/hotel_confirm.dart';
 import '../../travel_layout/travel_confirm.dart';
@@ -131,7 +130,7 @@ class bothLogin extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.manage_history,
+                            Icons.manage_accounts,
                             color: Colors.white,
                             size: 50,
                           ),

@@ -1,12 +1,17 @@
 class TravelApi {
-  static const hostConnect = "http://192.168.123.3";
+  static const hostConnect = "http://192.168.123.4";
 
   static const signup = "$hostConnect/travel/signup.jsp";
-  static const validateEmail = "$hostConnect/travel/validate_email.jsp";
 
   static const login = "$hostConnect/travel/login.jsp";
   static const userUpdate = "$hostConnect/travel/travel_update.jsp";
   static const resvcancelUpdate = "$hostConnect/travel/resv_cancel_update.jsp";
   static const resvUpdate = "$hostConnect/travel/resv_related_update.jsp";
   static const resvSelect = "$hostConnect/travel/resv_related_select.jsp";
+  static const cancelSelect = "$hostConnect/travel/resv_cancel_select.jsp";
+  static const inquiryInput = "$hostConnect/travel/room_inquiry_insert.jsp";
+  static const inquirySelect = "$hostConnect/travel/room_inquiry_select.jsp";
+  static const emailVal = "$hostConnect/travel/validate_email.jsp";
+  static const pwEdit = "$hostConnect/travel/password_change.jsp";
+  static const update = "$hostConnect/travel/inquiry_info_update.jsp";
 }

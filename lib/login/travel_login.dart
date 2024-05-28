@@ -2,11 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_PwSearch.dart';
+import 'package:provider/provider.dart';
 import '../../travel_layout/travel_index.dart';
 
 import 'travel_signup.dart';
 import 'package:http/http.dart' as http;
 import '../../travel_layout/travel_confirm.dart';
+
+import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -25,6 +29,7 @@ class LoginState extends State<Login> {
   var name;
   var email;
   var tel;
+  var travelId;
   final formKey = GlobalKey<FormState>();
 
   String? validatePassword(String value) {
@@ -53,17 +58,21 @@ class LoginState extends State<Login> {
     }
   }
 
-  userLogin() async {
+  void userLogin() async {
     try {
       var res = await http.post(Uri.parse(TravelApi.login), body: {
         'travel_email': emailController.text.trim(),
         'travel_pw': passwordController.text.trim(),
       });
 
+      if (!mounted) return;
+
       if (res.statusCode == 200) {
         var resLogin = jsonDecode(res.body);
 
         if (resLogin['success'] == true) {
+          Provider.of<UserData>(context, listen: false)
+              .setLoginTravelData(resLogin);
           setState(() {
             pw = passwordController.text.trim();
             emailController.clear();
@@ -71,9 +80,19 @@ class LoginState extends State<Login> {
             email = resLogin['travelData']['travel_email'];
             name = resLogin['travelData']['travel_name'];
             tel = resLogin['travelData']['travel_tel'];
+            travelId = resLogin['travelData']['agency_id'];
           });
-
-          complete();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => travel_index(
+                email: email,
+                name: name,
+                tel: tel,
+                pw: pw,
+              ),
+            ),
+          );
         } else {
           neverSatisfied();
         }
@@ -95,8 +114,8 @@ class LoginState extends State<Login> {
                 )));
   }
 
-  Future<void> neverSatisfied() async {
-    return showDialog<void>(
+  void neverSatisfied() {
+    showDialog<void>(
       //다이얼로그 위젯 소환
       context: context,
       builder: (BuildContext context) {
@@ -141,12 +160,12 @@ class LoginState extends State<Login> {
                 style: TextStyle(color: Colors.black54),
               ),
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.hovered)) {
+                overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                    (Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
                     return Colors.grey.withOpacity(0.04);
                   }
-                  if (states.contains(MaterialState.pressed)) {
+                  if (states.contains(WidgetState.pressed)) {
                     return Colors.grey.withOpacity(0.12);
                   }
                   return Colors.black;
@@ -294,7 +313,7 @@ class LoginState extends State<Login> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const travelSignUp()));
+                                          const travel_pw_search()));
                             },
                             child: const MouseRegion(
                               cursor: SystemMouseCursors.click,

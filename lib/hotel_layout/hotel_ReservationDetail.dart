@@ -34,7 +34,6 @@ class _ReservationDetailState extends State<ReservationDetail> {
           // _fetchUserDataFromApi();
         });
       }
-      print('안바뀜');
     } catch (e) {}
   }
 
@@ -46,7 +45,7 @@ class _ReservationDetailState extends State<ReservationDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            '예약확정 진행하시겠습니까?',
+            '예약을 수락하시겠습니까?',
             style: TextStyle(
                 fontFamily: 'Pretendard', fontWeight: FontWeight.w700),
           ),
@@ -296,14 +295,14 @@ class _ReservationDetailState extends State<ReservationDetail> {
                       ),
                     ),
                     child: const Text(
-                      '예약확정',
+                      '예약수락',
                       style: TextStyle(
                           fontFamily: 'Pretendard',
                           fontSize: 18,
                           color: Colors.white),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

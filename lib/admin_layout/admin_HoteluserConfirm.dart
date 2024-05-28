@@ -39,6 +39,7 @@ class _HoteluserConfirmState extends State<HoteluserConfirm> {
                 'email': userData['user_email'],
                 'phone': userData['user_tel'],
                 'name': userData['user_name'],
+                'hotel_id': userData['hotel_id']
               };
             }).toList();
 
@@ -154,7 +155,14 @@ class _HoteluserConfirmState extends State<HoteluserConfirm> {
   Widget build(BuildContext context) {
     return _userData.isEmpty
         ? const Center(
-            child: CircularProgressIndicator()) // 데이터가 로드될 때까지 로딩 스피너 표시
+            child: Text(
+            '리스트가 비어있습니다.',
+            style: TextStyle(
+              color: Colors.red,
+              fontFamily: 'Pretendard',
+              fontSize: 22,
+            ),
+          )) // 데이터가 로드될 때까지 로딩 스피너 표시
         : Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(

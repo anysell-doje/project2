@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/hotel_reservation.dart';
+import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
+import 'package:provider/provider.dart';
 
 class Reservation extends StatefulWidget {
   const Reservation({super.key, required this.hotelList});
@@ -13,24 +15,24 @@ class Reservation extends StatefulWidget {
   State<Reservation> createState() => _ReservationState();
 }
 
+late String username;
+late String userTel;
+late String travelID;
+
+var userNameController = TextEditingController(text: username);
+var userPhoneController = TextEditingController(text: userTel);
+var guestCountController = TextEditingController();
+var nightCountController = TextEditingController();
+var hotelPriceController = TextEditingController();
+var roomCountController = TextEditingController();
+var travelIDController = TextEditingController(text: travelID);
+
 class _ReservationState extends State<Reservation> {
-  var userNameController = TextEditingController();
-  var userPhoneController = TextEditingController();
-  var guestCountController = TextEditingController();
-  var nightCountController = TextEditingController();
-  var hotelPriceController = TextEditingController();
-  var roomCountController = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
   var hotelname2;
   var _nightCount = 0;
   bool resvConfirm = false;
-  @override
-  void initState() {
-    super.initState();
-    roomCountController.addListener(updatePrice);
-    nightCountController.addListener(updatePrice);
-  }
 
   void updatePrice() {
     int roomCount = int.tryParse(roomCountController.text) ?? 0;
@@ -44,6 +46,26 @@ class _ReservationState extends State<Reservation> {
       totalPrice = basePrice * roomCount * _nightCount;
       hotelPriceController.text = totalPrice.toString();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    roomCountController.addListener(updatePrice);
+    nightCountController.addListener(updatePrice);
+
+    // Provider를 통해 UserData 가져오기
+    final userData = Provider.of<UserData>(context, listen: false);
+
+    // UserData에서 사용자 정보 가져오기
+    username = userData.name.toString();
+    userTel = userData.tel.toString();
+    travelID = userData.travelId.toString();
+
+    // 컨트롤러 초기값 설정
+    userNameController.text = username;
+    userPhoneController.text = userTel;
+    travelIDController.text = travelID;
   }
 
   Future<void> selectDateRange() async {
@@ -68,31 +90,20 @@ class _ReservationState extends State<Reservation> {
 
   hotelReservation() async {
     try {
-      print('yes');
-      print('hotel_id : ${widget.hotelList[0]['hotel_id']}');
-      print('hotel_name: $hotelname2');
-      print('inquirer_name : ${userNameController.text.trim()}');
-      print('inquirer_tel : ${userPhoneController.text.trim()}');
-      print('guest_count : ${guestCountController.text.trim()}');
-      print('night_count : ${_nightCount.toString()}');
-      print('room_count : ${roomCountController.text.trim()}');
-      print('hotel_price : ${hotelPriceController.text.trim()}');
-      print('check_in_date : ${_startDate.toString()}');
-      print('check_out_date : ${_endDate.toString()}');
       var res = await http.post(
         Uri.parse(HotelReservation.reservation),
         body: {
           "hotel_id":
               widget.hotelList[0]['hotel_id'].toString(), // int를 String으로 변환
-          "hotel_name": hotelname2.toString(),
-          "inquirer_name": userNameController.text.trim(),
-          "inquirer_tel": userPhoneController.text.trim(),
+          "inquirer_name": username,
+          "inquirer_tel": userTel,
           "guest_count": guestCountController.text.trim(),
           "night_count": _nightCount.toString(), // int를 String으로 변환
           "room_count": roomCountController.text.trim(),
           "hotel_price": hotelPriceController.text.trim(),
           "check_in_date": _startDate.toString(), // DateTime을 String으로 변환
           "check_out_date": _endDate.toString(), // DateTime을 String으로 변환
+          "agency_id": travelID,
         },
       );
 
@@ -138,9 +149,11 @@ class _ReservationState extends State<Reservation> {
               child: const Text('확인'),
               onPressed: () {
                 Navigator.of(context).pop();
+
                 setState(() {
                   hotelname2 = widget.hotelList[0]['hotel_name'];
                 });
+
                 hotelReservation();
               },
             ),
@@ -162,6 +175,7 @@ class _ReservationState extends State<Reservation> {
     String hotelAddress = widget.hotelList[0]['hotel_address'];
     String hotelRating = widget.hotelList[0]['hotel_rating'].toString();
     String hotelPrice = widget.hotelList[0]['hotel_price'].toString();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -198,12 +212,13 @@ class _ReservationState extends State<Reservation> {
                 SizedBox(
                   width: 270,
                   child: TextFormField(
+                    // initialValue: username,
+                    readOnly: true,
                     controller: userNameController,
                     decoration: InputDecoration(
                         isDense: true,
                         contentPadding:
                             const EdgeInsets.only(top: 25, left: 10),
-                        hintText: '이름을 입력하세요.',
                         hintStyle: const TextStyle(
                           fontFamily: 'Pretendard',
                         ),
@@ -230,12 +245,46 @@ class _ReservationState extends State<Reservation> {
                 SizedBox(
                   width: 270,
                   child: TextFormField(
+                    // initialValue: userTel,
+                    readOnly: true,
                     controller: userPhoneController,
                     decoration: InputDecoration(
                         isDense: true,
                         contentPadding:
                             const EdgeInsets.only(top: 25, left: 10),
                         hintText: '전화번호를 입력하세요.',
+                        hintStyle: const TextStyle(
+                          fontFamily: 'Pretendard',
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 20, left: 15.0, bottom: 6),
+                  child: Row(
+                    children: [
+                      Text(
+                        '여행사ID',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Pretendard',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 270,
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: travelIDController,
+                    decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding:
+                            const EdgeInsets.only(top: 25, left: 10),
                         hintStyle: const TextStyle(
                           fontFamily: 'Pretendard',
                         ),

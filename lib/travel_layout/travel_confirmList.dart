@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_hotel/api/travel_api.dart';
+import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
+import 'package:flutter_application_hotel/travel_layout/travel_InquiryPage.dart';
 import 'package:flutter_application_hotel/travel_layout/travel_confirmListDetail.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ReservationConfirmList extends StatefulWidget {
   const ReservationConfirmList({super.key});
@@ -15,19 +18,34 @@ class ReservationConfirmList extends StatefulWidget {
 class _ReservationConfirmListState extends State<ReservationConfirmList> {
   List<Map<String, dynamic>> _userData = []; // 데이터베이스에서 가져온 사용자 데이터
   var reservation_id = "";
+  var hotelID = "";
+  bool isLoading = false;
+  bool hasData = false;
+  String? travelID;
 
   @override
   void initState() {
     super.initState();
+
+    // Provider를 통해 UserData 가져오기
+    final userData = Provider.of<UserData>(context, listen: false);
+
+    // UserData에서 사용자 정보 가져오기
+    travelID = userData.travelId.toString();
     // 비동기적으로 데이터를 가져오는 시뮬레이션 (예: 네트워크 요청 등)
     _fetchUserDataFromApi();
   }
 
   Future<void> _fetchUserDataFromApi() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       var response = await http.post(Uri.parse(TravelApi.resvSelect), body: {
         'travel_reservation_status': "1",
         'hotel_reservation_status': "1",
+        "agency_id": travelID,
       });
 
       if (response.statusCode == 200) {
@@ -44,6 +62,7 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
                 'check_out_date': userData['check_out_date'],
                 "travel_reservation_status":
                     userData['travel_reservation_status'],
+                "agency_id": userData['agency_id'],
                 "room_count": userData['room_count'].toString(),
                 "night_count": userData['night_count'].toString(),
                 "hotel_id": userData['hotel_id'].toString(),
@@ -54,26 +73,39 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
                 "hotel_name": userData['hotel_name'],
               };
             }).toList();
+
+            isLoading = false;
+            hasData = _userData.isNotEmpty;
           });
         } else {
+          setState(() {
+            isLoading = false;
+            hasData = false;
+          });
           throw "Failed to fetch user data";
         }
       } else {
+        setState(() {
+          isLoading = false;
+          hasData = false;
+        });
         throw "Failed to load user data: ${response.statusCode}";
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+        hasData = false;
+      });
       print("Error fetching user data: $e");
     }
   }
 
   Future<void> resvCancel() async {
     try {
-      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
+      var response =
+          await http.post(Uri.parse(TravelApi.resvcancelUpdate), body: {
         'reservation_id': reservation_id,
-        'travel_reservation_status': "3",
       });
-
-      print(reservation_id);
 
       if (response.statusCode == 200) {
         _fetchUserDataFromApi();
@@ -123,69 +155,119 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
     );
   }
 
+  void inquiryInput(Map<String, dynamic> userData) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InquiryInput(userData: userData),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return _userData.isEmpty
-        ? const Center(
-            child: Text(
-              '예약리스트가 비어있습니다.',
-              style: TextStyle(
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w700,
-                  color: Colors.red,
-                  fontSize: 22),
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ListView(
-              children: _userData.map((user) {
-                return Card(
-                  child: ListTile(
-                    title: Text(
-                      user['inquirer_name'].toString(),
-                      style: const TextStyle(
-                          fontFamily: 'Pretendard',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    subtitle: Text(
-                      user['hotel_name'].toString(),
-                      style: const TextStyle(
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w500),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            print(user);
-                            viewDetail(user);
-                          },
-                          child: const Text(
-                            'Details',
-                            style: TextStyle(color: Colors.green),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          '최종컨펌대기 리스트',
+          style: TextStyle(
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w600,
+            fontSize: 25,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        elevation: 2,
+        backgroundColor: Colors.purple[200],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : hasData
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ListView.separated(
+                    itemCount: _userData.length,
+                    separatorBuilder: (context, index) =>
+                        const Divider(), // 각 항목 사이에 구분선 추가
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> user = _userData[index];
+
+                      return ListTile(
+                        title: Text(
+                          user['inquirer_name'].toString(),
+                          style: const TextStyle(
+                            fontFamily: 'Pretendard',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              reservation_id = user['reservation_id'];
-                            });
-                            _cancleConfirm();
-                          },
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(color: Colors.red),
+                        subtitle: Text(
+                          user['hotel_name'].toString(),
+                          style: const TextStyle(
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ],
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                print(user);
+                                viewDetail(user);
+                              },
+                              child: const Text(
+                                '자세히보기',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: 'Pretendard'),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                print(user);
+                                inquiryInput(
+                                  user,
+                                );
+                              },
+                              child: const Text(
+                                '문의하기',
+                                style: TextStyle(
+                                    color: Colors.orange,
+                                    fontFamily: 'Pretendard'),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  reservation_id = user['reservation_id'];
+                                  hotelID = user['hotel_id'];
+                                });
+                                _cancleConfirm();
+                              },
+                              child: const Text(
+                                '취소',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontFamily: 'Pretendard'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : const Center(
+                  child: Text(
+                    '리스트가 비어있습니다.',
+                    style: TextStyle(
+                      fontFamily: 'Pretendard',
+                      color: Colors.red,
+                      fontSize: 22,
                     ),
                   ),
-                );
-              }).toList(),
-            ),
-          );
+                ),
+    );
   }
 }

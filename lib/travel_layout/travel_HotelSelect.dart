@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../travel_layout/travel_HotelReservation.dart';
 
@@ -22,7 +21,7 @@ class _HotelSignUpState extends State<HotelSelect> {
         'hotel_id': widget.hotelList['hotel_id'],
         'hotel_address': widget.hotelList['hotel_address'],
         'hotel_rating': widget.hotelList['hotel_rating'].toString(),
-        'hotel_price': widget.hotelList['hotel_price'].toString()
+        'hotel_price': widget.hotelList['hotel_price'].toString(),
       }
     ];
     String hotelName = widget.hotelList['hotel_name'];

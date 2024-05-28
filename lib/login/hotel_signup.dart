@@ -211,8 +211,8 @@ class _SignState extends State<HotelSignUp> {
                       maxLength: 40,
                       decoration: const InputDecoration(
                           counterText: '',
-                          prefixIcon: Icon(Icons.phone),
-                          hintText: '여행사 ID'),
+                          prefixIcon: Icon(Icons.admin_panel_settings),
+                          hintText: '호텔 ID'),
                       validator: (value) {
                         if (value?.isEmpty ?? true) {
                           return '호텔 ID를 입력하세요.';

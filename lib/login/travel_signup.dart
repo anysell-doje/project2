@@ -64,11 +64,12 @@ class _SignState extends State<travelSignUp> {
         body: {
           "travel_email": emailController.text.trim(),
           "travel_pw": passwordController.text.trim(),
+          "agency_id": travelidController.text.trim().toString(),
           "travel_tel": telController.text.trim(),
           "travel_name": userNameController.text.trim(),
-          "travel_id": travelidController.text.trim(),
         },
       );
+      print(res.body);
       if (res.statusCode == 200) {
         var resSignup = jsonDecode(res.body);
         if (resSignup['success'] == true) {
@@ -77,9 +78,13 @@ class _SignState extends State<travelSignUp> {
             emailController.clear();
             passwordController.clear();
             telController.clear();
+            travelidController.clear();
             complete();
           });
-        } else {}
+        } else {
+          print('실패');
+          failed();
+        }
       }
     } catch (e) {
       print(e.toString());
@@ -234,7 +239,7 @@ class _SignState extends State<travelSignUp> {
                     width: 370.0,
                     child: TextFormField(
                       cursorColor: Colors.blue,
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.number,
                       maxLength: 40,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -245,7 +250,7 @@ class _SignState extends State<travelSignUp> {
                       controller: travelidController,
                       decoration: const InputDecoration(
                           counterText: '',
-                          prefixIcon: Icon(Icons.phone),
+                          prefixIcon: Icon(Icons.admin_panel_settings),
                           hintText: '여행사 ID'),
                     ),
                   ),

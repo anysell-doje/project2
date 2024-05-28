@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_PwSearch.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_index.dart';
 import 'package:flutter_application_hotel/login/hotel_signup.dart';
+import 'package:flutter_application_hotel/travel_layout/TravelInfo.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_confirm.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -47,12 +50,15 @@ class LoginState extends State<Login> {
         'user_pw': passwordController.text.trim(),
       });
 
+      if (!mounted) return;
+
       if (res.statusCode == 200) {
         print(res.statusCode);
         var resLogin = jsonDecode(res.body);
         print(resLogin);
         if (resLogin['success'] == true && passwordController.text.isNotEmpty) {
-          print(res);
+          Provider.of<UserData>(context, listen: false)
+              .setLoginHotelData(resLogin);
           setState(() {
             pw = passwordController.text.trim();
             emailController.clear();
@@ -130,12 +136,12 @@ class LoginState extends State<Login> {
                 style: TextStyle(color: Colors.black54),
               ),
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.hovered)) {
+                overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                    (Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
                     return Colors.grey.withOpacity(0.04);
                   }
-                  if (states.contains(MaterialState.pressed)) {
+                  if (states.contains(WidgetState.pressed)) {
                     return Colors.grey.withOpacity(0.12);
                   }
                   return Colors.black;
@@ -277,7 +283,7 @@ class LoginState extends State<Login> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const HotelSignUp()));
+                                          const hotel_pw_search()));
                             },
                             child: const MouseRegion(
                               cursor: SystemMouseCursors.click,
