@@ -28,14 +28,13 @@ String checkInDate = "";
 String checkOutDate = "";
 String totalPrice = "";
 String resvStatus = "";
+var reservation_id = "";
 
 class _ReservationDetailState extends State<ReservationDetail> {
-  var reservation_id = "";
-
   Future<void> _resvConfirm() async {
     try {
       var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
-        'reservation_id': reservation_id,
+        'reservation_id': reservationId,
         'travel_reservation_status': "1",
         'hotel_reservation_status': "0",
       });
@@ -44,12 +43,10 @@ class _ReservationDetailState extends State<ReservationDetail> {
         if (mounted) {
           Navigator.pop(context, true); // true 값을 반환하며 현재 페이지 닫기
         }
-        print(reservation_id);
         setState(() {
           // _fetchUserDataFromApi();
         });
       }
-      print('안바뀜');
     } catch (e) {}
   }
 

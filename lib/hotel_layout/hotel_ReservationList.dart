@@ -126,17 +126,19 @@ class _ReservationListState extends State<ReservationList> {
     );
   }
 
-  void viewDetail(Map<String, dynamic> userData) {
-    Navigator.push(
+  void viewDetail(Map<String, dynamic> userData) async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ReservationDetail(ReserverInfo: userData),
       ),
-    ).then((value) {
-      if (value) {
-        setState(() {});
-      }
-    });
+    );
+
+    if (result == true) {
+      setState(() {
+        _fetchUserDataFromApi();
+      });
+    }
   }
 
   @override

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_hotel/hotel_layout/hotel_LastConfirmCompleteList.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_MyPage.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationCompleteList.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationConfirmList.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_CancelList.dart';
+import 'package:flutter_application_hotel/hotel_layout/hotel_inquirySelect.dart';
 import 'package:side_navigation/side_navigation.dart';
 import 'package:flutter_application_hotel/hotel_layout/hotel_ReservationList.dart';
 
@@ -41,6 +41,7 @@ class _MainViewState extends State<hotel_index> {
       const ReservationConfirmList(),
       const ReservationComplete(),
       const CancelList(),
+      const HotelInquirylist(),
       hotel_MyPage(email: email, name: name, tel: tel, pw: pw)
     ];
   }
@@ -107,6 +108,10 @@ class _MainViewState extends State<hotel_index> {
               SideNavigationBarItem(
                 icon: Icons.auto_graph_outlined,
                 label: '취소 리스트',
+              ),
+              SideNavigationBarItem(
+                icon: Icons.auto_graph_outlined,
+                label: '문의 리스트',
               ),
               SideNavigationBarItem(
                 icon: Icons.person,

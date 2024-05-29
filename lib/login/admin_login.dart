@@ -114,12 +114,12 @@ class LoginState extends State<Login> {
                 style: TextStyle(color: Colors.black54),
               ),
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.hovered)) {
+                overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                    (Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
                     return Colors.grey.withOpacity(0.04);
                   }
-                  if (states.contains(MaterialState.pressed)) {
+                  if (states.contains(WidgetState.pressed)) {
                     return Colors.grey.withOpacity(0.12);
                   }
                   return Colors.black;

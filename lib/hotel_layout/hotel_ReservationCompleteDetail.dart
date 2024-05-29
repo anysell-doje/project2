@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_hotel/api/hotel_api.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_hotel/api/travel_api.dart';
 
@@ -15,12 +16,25 @@ class ReservationCompleteDetail extends StatefulWidget {
 }
 
 List<dynamic> data = [];
+String reservationId = "";
+String hotelID = "";
+String travelID = "";
+String hotelname = "";
+String inquiryName = "";
+String inquiryTel = "";
+String nightCount = "";
+String guestCount = "";
+String roomCount = "";
+String checkInDate = "";
+String checkOutDate = "";
+String totalPrice = "";
+String resvStatus = "";
 var reservation_id = "";
 
 class _ReservationCompleteDetailState extends State<ReservationCompleteDetail> {
   Future<void> _resvConfirm() async {
     try {
-      var response = await http.post(Uri.parse(TravelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(HotelApi.resvConfirm), body: {
         'reservation_id': reservation_id,
         'travel_reservation_status': "2",
         'hotel_reservation_status': "1"
@@ -28,10 +42,10 @@ class _ReservationCompleteDetailState extends State<ReservationCompleteDetail> {
 
       if (response.statusCode == 200) {
         print('바뀜');
+        Navigator.pop(context, true);
 
         setState(() {
           // _fetchUserDataFromApi();
-          Navigator.pop(context);
         });
       }
     } catch (e) {}
@@ -40,24 +54,24 @@ class _ReservationCompleteDetailState extends State<ReservationCompleteDetail> {
   @override
   void initState() {
     // TODO: implement initState
-    _ReservationCompleteDetailState();
+    super.initState();
+    reservationId = widget.ReserverInfo['reservation_id'].toString();
+    hotelID = widget.ReserverInfo['hotel_id'].toString();
+    travelID = widget.ReserverInfo['agency_id'].toString();
+    hotelname = widget.ReserverInfo['hotel_name'];
+    inquiryName = widget.ReserverInfo['inquirer_name'];
+    inquiryTel = widget.ReserverInfo['inquirer_tel'];
+    nightCount = widget.ReserverInfo['night_count'].toString();
+    guestCount = widget.ReserverInfo['guest_count'].toString();
+    roomCount = widget.ReserverInfo['room_count'].toString();
+    checkInDate = widget.ReserverInfo['check_in_date'];
+    checkOutDate = widget.ReserverInfo['check_out_date'];
+    totalPrice = widget.ReserverInfo['hotel_price'].toString();
+    resvStatus = widget.ReserverInfo['travel_reservation_status'];
   }
 
   @override
   Widget build(BuildContext context) {
-    String reservationId = widget.ReserverInfo['reservation_id'].toString();
-    String hotelID = widget.ReserverInfo['hotel_id'].toString();
-    String travelID = widget.ReserverInfo['agency_id'].toString();
-    String hotelname = widget.ReserverInfo['hotel_name'];
-    String inquiryName = widget.ReserverInfo['inquirer_name'];
-    String inquiryTel = widget.ReserverInfo['inquirer_tel'];
-    String nightCount = widget.ReserverInfo['night_count'].toString();
-    String guestCount = widget.ReserverInfo['guest_count'].toString();
-    String roomCount = widget.ReserverInfo['room_count'].toString();
-    String checkInDate = widget.ReserverInfo['check_in_date'];
-    String checkOutDate = widget.ReserverInfo['check_out_date'];
-    String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String resvStatus = widget.ReserverInfo['travel_reservation_status'];
     print(widget.ReserverInfo['agency_id']);
     return Scaffold(
       appBar: AppBar(
@@ -67,8 +81,9 @@ class _ReservationCompleteDetailState extends State<ReservationCompleteDetail> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          child: SizedBox(
-            width: 200,
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(30),
             child: Column(
               children: [
                 Row(
@@ -265,19 +280,21 @@ class _ReservationCompleteDetailState extends State<ReservationCompleteDetail> {
                       Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.greenAccent,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5),
+                          ),
                         ),
-                      ),
-                    ),
+                        side: const BorderSide(
+                            color: Colors.greenAccent, width: 2)),
                     child: const Text(
                       '뒤로가기',
                       style: TextStyle(
-                          fontFamily: 'Pretendard',
-                          fontSize: 18,
-                          color: Colors.white),
+                        fontFamily: 'Pretendard',
+                        fontSize: 18,
+                        color: Colors.greenAccent,
+                      ),
                     ),
                   ),
                 )

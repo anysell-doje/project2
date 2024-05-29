@@ -15,12 +15,25 @@ class confirmListDetail extends StatefulWidget {
 
 List<dynamic> data = [];
 var reservation_id = "";
-late String travelresvStatus; // travelresvStatus 상태 변수 추가
+String reservationId = "";
+String hotelID = "";
+String hotelname = "";
+String travelID = "";
+String inquiryName = "";
+String inquiryTel = "";
+String nightCount = "";
+String guestCount = "";
+String roomCount = "";
+String checkInDate = "";
+String checkOutDate = "";
+String totalPrice = "";
+String travelresvStatus = "";
+String hotelresvStatus = "";
 
 class confirmListDetailState extends State<confirmListDetail> {
   Future<void> _resvConfirm() async {
     try {
-      var response = await http.post(Uri.parse(HotelApi.resvUpdate), body: {
+      var response = await http.post(Uri.parse(HotelApi.resvConfirm), body: {
         'reservation_id': reservation_id,
         'hotel_reservation_status': "2",
         'travel_reservation_status': "2",
@@ -28,8 +41,8 @@ class confirmListDetailState extends State<confirmListDetail> {
 
       if (response.statusCode == 200) {
         print('바뀜');
+        Navigator.pop(context, true);
         setState(() {
-          Navigator.pop(context);
           // _fetchUserDataFromApi();
         });
       }
@@ -79,24 +92,27 @@ class confirmListDetailState extends State<confirmListDetail> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    String reservationId = widget.ReserverInfo['reservation_id'].toString();
-    String hotelID = widget.ReserverInfo['hotel_id'].toString();
-    String hotelname = widget.ReserverInfo['hotel_name'];
-    String travelID = widget.ReserverInfo['agency_id'];
-    String inquiryName = widget.ReserverInfo['inquirer_name'];
-    String inquiryTel = widget.ReserverInfo['inquirer_tel'];
-    String nightCount = widget.ReserverInfo['night_count'].toString();
-    String guestCount = widget.ReserverInfo['guest_count'].toString();
-    String roomCount = widget.ReserverInfo['room_count'].toString();
-    String checkInDate = widget.ReserverInfo['check_in_date'];
-    String checkOutDate = widget.ReserverInfo['check_out_date'];
-    String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String travelresvStatus = widget.ReserverInfo['travel_reservation_status'];
-    String hotelresvStatus = widget.ReserverInfo['hotel_reservation_status'];
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    reservationId = widget.ReserverInfo['reservation_id'].toString();
+    hotelID = widget.ReserverInfo['hotel_id'].toString();
+    hotelname = widget.ReserverInfo['hotel_name'];
+    travelID = widget.ReserverInfo['agency_id'];
+    inquiryName = widget.ReserverInfo['inquirer_name'];
+    inquiryTel = widget.ReserverInfo['inquirer_tel'];
+    nightCount = widget.ReserverInfo['night_count'].toString();
+    guestCount = widget.ReserverInfo['guest_count'].toString();
+    roomCount = widget.ReserverInfo['room_count'].toString();
+    checkInDate = widget.ReserverInfo['check_in_date'];
+    checkOutDate = widget.ReserverInfo['check_out_date'];
+    totalPrice = widget.ReserverInfo['hotel_price'].toString();
+    travelresvStatus = widget.ReserverInfo['travel_reservation_status'];
+    hotelresvStatus = widget.ReserverInfo['hotel_reservation_status'];
+  }
 
-    print('ddddd1: $travelresvStatus');
-    print('ddddd2: $hotelresvStatus');
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('상세정보'),
@@ -105,8 +121,9 @@ class confirmListDetailState extends State<confirmListDetail> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          child: SizedBox(
-            width: 200,
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(30),
             child: Column(
               children: [
                 Row(
@@ -290,11 +307,15 @@ class confirmListDetailState extends State<confirmListDetail> {
                       _Confirm();
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.greenAccent,
+                      backgroundColor: Colors.white,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(5),
                         ),
+                      ),
+                      side: const BorderSide(
+                        color: Colors.greenAccent,
+                        width: 2,
                       ),
                     ),
                     child: const Text(
@@ -302,7 +323,7 @@ class confirmListDetailState extends State<confirmListDetail> {
                       style: TextStyle(
                           fontFamily: 'Pretendard',
                           fontSize: 18,
-                          color: Colors.white),
+                          color: Colors.greenAccent),
                     ),
                   ),
                 )

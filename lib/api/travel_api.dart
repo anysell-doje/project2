@@ -14,4 +14,5 @@ class TravelApi {
   static const emailVal = "$hostConnect/travel/validate_email.jsp";
   static const pwEdit = "$hostConnect/travel/password_change.jsp";
   static const update = "$hostConnect/travel/inquiry_info_update.jsp";
+  static const cancleStatistics = "$hostConnect/travel/hotel_cancel.jsp";
 }

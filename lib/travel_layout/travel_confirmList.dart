@@ -146,13 +146,19 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
     );
   }
 
-  void viewDetail(Map<String, dynamic> userData) {
-    Navigator.push(
+  void viewDetail(Map<String, dynamic> userData) async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => confirmListDetail(ReserverInfo: userData),
       ),
     );
+
+    if (result == true) {
+      setState(() {
+        _fetchUserDataFromApi();
+      });
+    }
   }
 
   void inquiryInput(Map<String, dynamic> userData) {
@@ -213,7 +219,6 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                print(user);
                                 viewDetail(user);
                               },
                               child: const Text(
@@ -225,10 +230,7 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
                             ),
                             TextButton(
                               onPressed: () {
-                                print(user);
-                                inquiryInput(
-                                  user,
-                                );
+                                inquiryInput(user);
                               },
                               child: const Text(
                                 '문의하기',
@@ -241,7 +243,6 @@ class _ReservationConfirmListState extends State<ReservationConfirmList> {
                               onPressed: () {
                                 setState(() {
                                   reservation_id = user['reservation_id'];
-                                  hotelID = user['hotel_id'];
                                 });
                                 _cancleConfirm();
                               },

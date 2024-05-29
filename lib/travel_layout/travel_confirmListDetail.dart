@@ -14,6 +14,19 @@ class confirmListDetail extends StatefulWidget {
 }
 
 List<dynamic> data = [];
+String reservationId = "";
+String hotelID = "";
+String travelID = "";
+String hotelname = "";
+String inquiryName = "";
+String inquiryTel = "";
+String nightCount = "";
+String guestCount = "";
+String roomCount = "";
+String checkInDate = "";
+String checkOutDate = "";
+String totalPrice = "";
+String resvStatus = "";
 var reservation_id = "";
 
 class _confirmListDetailState extends State<confirmListDetail> {
@@ -26,11 +39,9 @@ class _confirmListDetailState extends State<confirmListDetail> {
       });
 
       if (response.statusCode == 200) {
-        print('바뀜');
-
+        Navigator.pop(context, true);
         setState(() {
           // _fetchUserDataFromApi();
-          Navigator.pop(context);
         });
       }
     } catch (e) {}
@@ -81,25 +92,25 @@ class _confirmListDetailState extends State<confirmListDetail> {
   @override
   void initState() {
     // TODO: implement initState
-    _confirmListDetailState();
+    super.initState();
+    reservationId = widget.ReserverInfo['reservation_id'].toString();
+    hotelID = widget.ReserverInfo['hotel_id'].toString();
+    travelID = widget.ReserverInfo['agency_id'].toString();
+    hotelname = widget.ReserverInfo['hotel_name'];
+    inquiryName = widget.ReserverInfo['inquirer_name'];
+    inquiryTel = widget.ReserverInfo['inquirer_tel'];
+    nightCount = widget.ReserverInfo['night_count'].toString();
+    guestCount = widget.ReserverInfo['guest_count'].toString();
+    roomCount = widget.ReserverInfo['room_count'].toString();
+    checkInDate = widget.ReserverInfo['check_in_date'];
+    checkOutDate = widget.ReserverInfo['check_out_date'];
+    totalPrice = widget.ReserverInfo['hotel_price'].toString();
+    resvStatus = widget.ReserverInfo['travel_reservation_status'];
+    print(widget.ReserverInfo['agency_id']);
   }
 
   @override
   Widget build(BuildContext context) {
-    String reservationId = widget.ReserverInfo['reservation_id'].toString();
-    String hotelID = widget.ReserverInfo['hotel_id'].toString();
-    String travelID = widget.ReserverInfo['agency_id'].toString();
-    String hotelname = widget.ReserverInfo['hotel_name'];
-    String inquiryName = widget.ReserverInfo['inquirer_name'];
-    String inquiryTel = widget.ReserverInfo['inquirer_tel'];
-    String nightCount = widget.ReserverInfo['night_count'].toString();
-    String guestCount = widget.ReserverInfo['guest_count'].toString();
-    String roomCount = widget.ReserverInfo['room_count'].toString();
-    String checkInDate = widget.ReserverInfo['check_in_date'];
-    String checkOutDate = widget.ReserverInfo['check_out_date'];
-    String totalPrice = widget.ReserverInfo['hotel_price'].toString();
-    String resvStatus = widget.ReserverInfo['travel_reservation_status'];
-    print(widget.ReserverInfo['agency_id']);
     return Scaffold(
       appBar: AppBar(
         title: const Text('상세정보'),

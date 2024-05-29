@@ -152,7 +152,9 @@ class _ReservationListState extends State<ReservationList> {
     );
 
     if (result == true) {
-      setState(() {});
+      setState(() {
+        _fetchUserDataFromApi();
+      });
     }
   }
 

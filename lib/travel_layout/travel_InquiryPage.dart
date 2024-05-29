@@ -17,7 +17,6 @@ class InquiryInput extends StatefulWidget {
 
 class _InquiryInputState extends State<InquiryInput> {
   final List<String> items = [
-    '객실이 남아있는지 궁금합니다.',
     '예약내용을 변경하고싶습니다.',
   ];
 
@@ -58,6 +57,7 @@ class _InquiryInputState extends State<InquiryInput> {
 
         if (res['success'] == true) {
           print('문의 성공');
+          Navigator.pop(context);
         }
       }
     } catch (e) {}
